@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Node {
     int state = 0;
@@ -6,15 +7,6 @@ public class Node {
     int cost = 0 ;
     Node parent ;
     static final int dimension = 3;
-    Node(){
-        state=0;
-        cost=0;
-    }
-    public Node(int state){
-        this.state=state;
-
-    }
-
     public void setCost (int cost){
         this.cost = cost ;
     }
@@ -40,122 +32,63 @@ public class Node {
         return this.parent ;
     }
 
+    public void swapIndexes (int first , int second){
+        int[] stateArray = new int[9] ;
+        String stateString = Integer.toString(this.state) ;
+        if (stateString.length() != 9){
+            stateString = '0' + stateString ;
+        }
+        for (int i=0 ; i<stateString.length() ; i++) {
+            stateArray[i] = stateString.charAt(i) - '0';
+        }
+        int temp = stateArray[first] ;
+        stateArray[first] = stateArray[second] ;
+        stateArray[second] = temp ;
+        int result = 0 ,count = 0 ;
+        for (int i=stateArray.length-1 ; i>=0 ; i--) {
+            result += stateArray[i] * Math.pow(10,count);
+            count++;
+        }
+        this.state = result ;
+    }
     public List<Node> children (){
         LinkedList<Node> children = new LinkedList<>() ;
         int[] stateArray = new int[9] ;
-        String stateString = Integer.toString(this.state) ;
-        int indexOfZero = -7 ;
+        String stateString = String.valueOf(getState()) ;
+        if (stateString.length() != 9){
+            stateString = '0' + stateString ;
+        }
+        int indexOfZero = -1 ;
         for (int i=0 ; i<stateString.length() ; i++){
             stateArray[i] = stateString.charAt(i) - '0' ;
             if (stateArray[i] == 0){
                 indexOfZero = i ;
             }
         }
-        if (indexOfZero >2){     //can go up
+        if (indexOfZero > 2){     //can go up
             Node child = new Node() ;
             child.setState(this.state);
-            child.swap(indexOfZero, indexOfZero-dimension);
+            child.swapIndexes(indexOfZero , indexOfZero - dimension);
             children.add(child);
         }
-        if (indexOfZero <6){     //can go down
+        if (indexOfZero < 6){     //can go down
             Node child = new Node() ;
             child.setState(this.state);
-            child.swap(indexOfZero, indexOfZero+dimension);
+            child.swapIndexes(indexOfZero , indexOfZero + dimension);
             children.add(child);
         }
         if (indexOfZero % dimension == 0 || indexOfZero % dimension == 1){     //can go right
             Node child = new Node() ;
             child.setState(this.state);
-            child.swap(indexOfZero, indexOfZero+1);
+            child.swapIndexes(indexOfZero , indexOfZero + 1);
             children.add(child);
         }
         if (indexOfZero % dimension == 1 || indexOfZero % dimension == 2){     //can go left
             Node child = new Node() ;
             child.setState(this.state);
-            child.swap(indexOfZero, indexOfZero-1);
+            child.swapIndexes(indexOfZero , indexOfZero - 1);
             children.add(child);
         }
         return children;
     }
-
-
-    //////////////////////////////////////////////
-    ///////////////////////////////////////////
-   /* public List<Node> children(){
-        int n = 3;
-        int [] curr = new int[3*3];
-        int zeroIndex = -1;
-        LinkedList<Node>  neighbors = new LinkedList<Node>();
-        String st = Integer.toString(state);
-        if(st.length() != 9) {
-            st = '0' + st;
-        }
-        for (int i = 0; i < st.length(); i++){
-            curr[i] = st.charAt(i) - '0';
-            if(curr[i] == 0)
-                zeroIndex = i;
-        }
-
-        if(zeroIndex/n != 0) {		//Can Go UP
-            Node neighbor = new Node(state);
-            neighbor.swap(zeroIndex, zeroIndex-n);
-            neighbors.add(neighbor);
-        }
-
-        if(zeroIndex/n != 2) {		//Can Go DOWN
-            Node neighbor = new Node(state);
-            neighbor.swap(zeroIndex, zeroIndex+n);
-            neighbors.add(neighbor);
-        }
-
-        if(zeroIndex%n != 0) {		//Can Go Left
-            Node neighbor = new Node(state);
-            neighbor.swap(zeroIndex, zeroIndex-1);
-            neighbors.add(neighbor);
-        }
-
-        if(zeroIndex%n != 2) {		//Can Go RIGHT
-            Node neighbor = new Node(state);
-            neighbor.swap(zeroIndex, zeroIndex+1);
-            neighbors.add(neighbor);
-        }
-
-        return neighbors;
-    }*/
-    /////////////////////////////////////////////////// /
-    ///////////////////////////////////////////
-
-
-
-
-    private void swap (int i, int j) {
-        int [] curr = new int[3*3];
-        String st = Integer.toString(state);
-        if(st.length() != 9) {
-            st = '0' + st;
-        }
-        for (int k=0;k<st.length();k++){
-            curr[k] = st.charAt(k) - '0';
-        }
-
-        int t = curr[i];
-        curr[i] = curr[j];
-        curr[j] = t;
-
-
-        int result = 0;
-        for (int k=0;k<st.length();k++){
-            result*=10;
-            result+=curr[k];
-        }
-
-
-        this.state =result;
-
-    }
-
-
-
-
-
 }
