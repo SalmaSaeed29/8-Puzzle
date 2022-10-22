@@ -12,6 +12,10 @@ public class Result {
 
     //number of node expanded
     private int nofNodes;
+
+
+    private int MaxDepth;
+
     private long time;
 
 
@@ -50,5 +54,13 @@ public class Result {
 
     public void setPath(List<Node> path) {
         this.path = path;
+    }
+
+    public int getMaxDepth() {
+        return MaxDepth;
+    }
+
+    public void setMaxDepth(int MaxDepth) {
+        this.MaxDepth = MaxDepth;
     }
 }

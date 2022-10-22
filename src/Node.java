@@ -3,14 +3,26 @@ import java.util.*;
 public class Node {
     // State represented as sequence of digits
     int state;
+    int depth;
+
+
+
     Node parent;
     double totalcost;
     int cost=0;
     Node(){
         state=0;
         cost=0;
+        depth=0;
     }
 
+    public int getDepth() {
+        return depth;
+    }
+
+    public void setDepth(int depth) {
+        this.depth = depth;
+    }
 
     public void setCost(int cost) {
         this.cost=cost;
@@ -60,6 +72,7 @@ public class Node {
         if(zeroIndex>2) {		//Can Go UP
             Node neighbor = new Node();
             neighbor.setState(state);
+            //neighbor.setDepth((state.getDepth())+1);
             neighbor.swapIndexes(zeroIndex, zeroIndex-n);
             neighbors.add(neighbor);
         }
