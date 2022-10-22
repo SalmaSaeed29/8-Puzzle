@@ -3,6 +3,7 @@ import java.util.*;
 public class DFS extends Solver {
     Stack<Node> frontier;
     HashSet<Integer> frontierSet;
+    Node state;
     public DFS(){
         super();
         frontier=new Stack<>();
@@ -23,9 +24,11 @@ public class DFS extends Solver {
     boolean search(Node initialState, Result result) {
         frontier.push(initialState);
         frontierSet.add(initialState.getState());
+        //initialState.setDepth(0);
+        //result.setMaxDepth(0);
 
         while(!frontier.isEmpty()){
-            Node state=frontier.pop();
+            state=frontier.pop();
             frontierSet.remove(state.getState());
             explored.add(state.getState());
             if(goalTest(state)){
@@ -36,8 +39,12 @@ public class DFS extends Solver {
             for(Node neighbor : state.children(true)){
                 if(!explored.contains(neighbor.getState()) && !frontierSet.contains(neighbor.getState())) {
                     neighbor.setParent(state);
+                    neighbor.setDepth(state.getDepth()+1);
                     frontier.add(neighbor);
                     frontierSet.add(neighbor.getState());
+                    if(neighbor.getDepth()>result.getMaxDepth()){
+                        result.setMaxDepth(neighbor.getDepth());
+                    }
                 }
             }
         }
