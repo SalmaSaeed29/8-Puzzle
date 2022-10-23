@@ -1,0 +1,59 @@
+import java.util.HashMap;
+import java.util.List;
+import java.util.PriorityQueue;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.PriorityQueue;
+
+public class AStarEuclidean extends Solver {
+    Heuristics getCost = new Heuristics() ;
+    PriorityQueue<Node> frontier = new PriorityQueue<>(10,new comparePriority()) ;
+    HashMap<Integer ,Double> frontierCosts= new HashMap<>() ;
+    int maxDepth = 0 ;
+    @Override
+    public boolean search (Node initialNode, Result result){
+        frontier.add(initialNode)  ;
+        frontierCosts.put(initialNode.getState(),0.0) ;
+        Node currentNode ;
+        while(!frontier.isEmpty()) {
+            currentNode = frontier.poll() ;
+            frontierCosts.remove(currentNode.getState()) ;
+            if (explored.contains(currentNode.getState())){
+                continue ;
+            }
+            explored.add(currentNode.getState()) ;
+
+            if (currentNode.getDepth() > maxDepth){
+                maxDepth = currentNode.getDepth() ;
+            }
+            if (goalTest(currentNode)){
+                getGoalNode().setParent(currentNode.getParent());
+                result.setNofNodes(explored.size());
+                result.setMaxDepth(maxDepth);
+                return true ;
+            }
+            List<Node> children = currentNode.children(false) ;
+            for (Node child : children) {
+                if(!explored.contains(child.getState())) {
+                    child.setCost(currentNode.getCost() + 1) ;
+                    child.setDepth(currentNode.getDepth() + 1);
+                    child.setTotalcost(getCost.heuristicCost(child.getState(),false) + child.getCost());
+                    child.setParent(currentNode) ;
+                    if(frontierCosts.containsKey(child.getState())) {
+                        if(child.getTotalcost() < frontierCosts.get(child.getState())) {
+                            frontierCosts.put(child.getState(), child.getTotalcost());
+                            frontier.remove(child);
+                        }else {
+                            continue;
+                        }
+                    }
+                    frontier.add(child) ;
+                }
+            }
+        }
+        System.out.println("Unsolvable Case !");
+        System.out.println("# of nodes expanded = " + (explored.size()));
+        return false;
+    }
+}
