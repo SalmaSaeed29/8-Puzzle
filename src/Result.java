@@ -12,19 +12,8 @@ public class Result {
 
     //number of node expanded
     private int nofNodes;
-
-
-    private int MaxDepth;
-
     private long time;
-
-
-    /*public Result(int nodesExpanded, long time, List<Node> path) {
-        this.nofNodes = nodesExpanded;
-        this.time = time;
-        this.path = path;
-
-    }*/
+    private int MaxDepth;
 
     public int getNofNodes() {
         return nofNodes;
@@ -55,7 +44,7 @@ public class Result {
     public void setPath(List<Node> path) {
         this.path = path;
     }
-
+    
     public int getMaxDepth() {
         return MaxDepth;
     }
