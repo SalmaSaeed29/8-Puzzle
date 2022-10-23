@@ -1,4 +1,3 @@
-
 import java.util.*;
 
 public class BFS extends Solver {
@@ -33,6 +32,7 @@ public class BFS extends Solver {
                 result.setNofNodes(explored.size());
                 return true;
             }
+
             for(Node neighbor : state.children(false)){
                 if(!explored.contains(neighbor.getState()) && !frontierSet.contains(neighbor.getState())) {
                     neighbor.setParent(state);
