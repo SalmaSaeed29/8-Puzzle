@@ -21,7 +21,7 @@ public class Node {
     public void setDepth(int depth) {
         this.depth = depth;
     }
-    
+
     public void setCost(int cost) {
         this.cost=cost;
     }
@@ -51,7 +51,8 @@ public class Node {
     }
 
 
-
+/* this func store all childer of the given node
+* the boolean will be true if the algom is DFS to reverse the sequence*/
     public List<Node> children(boolean dfs){
         int n = 3;
         int [] curr = new int[3*3];
@@ -108,7 +109,7 @@ public class Node {
     public int hashCode(){
         return Integer.hashCode(state);
     }
-     @Override
+    @Override
     public boolean equals(Object object){
         if(!(object instanceof Node))
             return false;
@@ -149,24 +150,7 @@ public class Node {
         }
         this.state = result ;
     }
-    
-    public boolean isSolvableState() {
-       	int [] curr = new int[3*3];
-    	String st = Integer.toString(state);
-    	if(st.length() != 9) {
-    		st = '0' + st;
-    	}
-    	for (int i = 0; i < st.length(); i++){
-    		curr[i] = st.charAt(i) - '0';
-    	}
-    	
-        int inversionCount = 0;
-        for (int i = 0; i < 9 - 1; i++)
-            for (int j = i+1; j < 9; j++)
-                 if (curr[i] > curr[j] && curr[i] > 0 && curr[j] > 0)
-                	 inversionCount++;
-    	return (inversionCount % 2 == 0);
-    }
 
-    
+
+
 }
