@@ -4,9 +4,6 @@ public class Node {
     // State represented as sequence of digits
     int state;
     int depth;
-
-
-
     Node parent;
     double totalcost;
     int cost=0;
@@ -16,6 +13,7 @@ public class Node {
         depth=0;
     }
 
+
     public int getDepth() {
         return depth;
     }
@@ -23,7 +21,7 @@ public class Node {
     public void setDepth(int depth) {
         this.depth = depth;
     }
-
+    
     public void setCost(int cost) {
         this.cost=cost;
     }
@@ -72,7 +70,6 @@ public class Node {
         if(zeroIndex>2) {		//Can Go UP
             Node neighbor = new Node();
             neighbor.setState(state);
-            //neighbor.setDepth((state.getDepth())+1);
             neighbor.swapIndexes(zeroIndex, zeroIndex-n);
             neighbors.add(neighbor);
         }
@@ -126,14 +123,9 @@ public class Node {
         String s = "";
         for(int i=0;i<3;i++) {
             for(int j=3*i;j<3*i+3;j++) {
-                s  += st.charAt(j) + " ";
-                if(j%3 != 2)
-                    s+= "| ";
-                else
-                    s+= "\n";
+                s  += st.charAt(j);
             }
         }
-        s += "---------\n";
         return s;
     }
 
@@ -157,8 +149,24 @@ public class Node {
         }
         this.state = result ;
     }
+    
+    public boolean isSolvableState() {
+       	int [] curr = new int[3*3];
+    	String st = Integer.toString(state);
+    	if(st.length() != 9) {
+    		st = '0' + st;
+    	}
+    	for (int i = 0; i < st.length(); i++){
+    		curr[i] = st.charAt(i) - '0';
+    	}
+    	
+        int inversionCount = 0;
+        for (int i = 0; i < 9 - 1; i++)
+            for (int j = i+1; j < 9; j++)
+                 if (curr[i] > curr[j] && curr[i] > 0 && curr[j] > 0)
+                	 inversionCount++;
+    	return (inversionCount % 2 == 0);
+    }
 
-
-
-
+    
 }
