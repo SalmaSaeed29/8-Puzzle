@@ -4,7 +4,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class myFrame extends JFrame implements ActionListener {
-	String in;
+	public String in;
+
+	String steps = "";
+
+	Node node = new Node();
+	Result res = null;
+	int cost;
+	long time;
+	int nodes;
+	int depth;
+
 	JFrame frame = new JFrame();
 	JPanel[][] panel = new JPanel[3][3];
 	JPanel[][] panels = new JPanel[3][3];
@@ -15,8 +25,18 @@ public class myFrame extends JFrame implements ActionListener {
 	JLabel[][] numbers = new JLabel[3][3];
 	JPanel panel1 = new JPanel();
 
+	JPanel panelCost = new JPanel();
+	JPanel panelDepth = new JPanel();
+	JPanel panelTime = new JPanel();
+	JPanel panelNodes = new JPanel();
+	JLabel labelCost = new JLabel();
+	JLabel labelDepth = new JLabel();
+	JLabel labelTime = new JLabel();
+	JLabel labelNodes = new JLabel();
+
 	myFrame() {
 		states("         ");
+		lastPanels();
 		algorithms();
 		input();
 		combo.addActionListener(this);
@@ -31,7 +51,6 @@ public class myFrame extends JFrame implements ActionListener {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		labels();
-		// square();
 		frame.setVisible(true);
 	}
 
@@ -64,9 +83,8 @@ public class myFrame extends JFrame implements ActionListener {
 	}
 
 	void algorithms() {
-		String[] algo = { "BFS", "DFS", "A*" };
+		String[] algo = { "BFS", "DFS", "A*:Manhattan Distance", "A*Euclidean Distance" };
 		combo = new JComboBox(algo);
-		// combo.setSize(200,50);
 		combo.setBounds(50, 70, 200, 50);
 		combo.setBackground(Color.white);
 
@@ -99,11 +117,9 @@ public class myFrame extends JFrame implements ActionListener {
 				panels[i][j] = new JPanel();
 				panels[i][j].setBounds(x, y, 140, 140);
 				panels[i][j].setBackground(Color.white);
-				// numbers[i][j].setOpaque(true);
 				frame.add(panels[i][j]);
 				frame.revalidate();
 				frame.repaint();
-				// frame.add(numbers[i][j]);
 				panels[i][j].setLayout(new BoxLayout(panels[i][j], BoxLayout.X_AXIS));
 				panels[i][j].add(Box.createHorizontalGlue());
 				panels[i][j].add(numbers[i][j]);
@@ -132,53 +148,176 @@ public class myFrame extends JFrame implements ActionListener {
 
 	int iterator = 0;
 
+	void lastPanels() {
+		panelCost.setBounds(20, 460, 750, 70);
+		panelDepth.setBounds(20, 530, 750, 70);
+		panelTime.setBounds(20, 600, 750, 70);
+		panelNodes.setBounds(20, 670, 750, 70);
+		panelCost.setBackground(Color.lightGray);
+		panelDepth.setBackground(Color.lightGray);
+		panelNodes.setBackground(Color.lightGray);
+		panelTime.setBackground(Color.lightGray);
+		frame.add(panelCost);
+		frame.add(panelDepth);
+		frame.add(panelTime);
+		frame.add(panelNodes);
+	}
+
+	void output(int cost, long time, int depth, int nodes) {
+		labelCost.setText("Cost of path :" + cost);
+		labelDepth.setText("Search depth :" + depth);
+		labelTime.setText("Running time :" + time);
+		labelNodes.setText("Nodes expanded :" + nodes);
+
+		labelCost.setFont(new Font("amaze", Font.BOLD, 32));
+		labelDepth.setFont(new Font("amaze", Font.BOLD, 32));
+		labelTime.setFont(new Font("amaze", Font.BOLD, 32));
+		labelNodes.setFont(new Font("amaze", Font.BOLD, 32));
+
+		frame.add(panelCost);
+		frame.add(panelDepth);
+		frame.add(panelTime);
+		frame.add(panelNodes);
+		panelCost.add(labelCost);
+		panelDepth.add(labelDepth);
+		panelTime.add(labelTime);
+		panelNodes.add(labelNodes);
+	}
+
+	void updateOutput() {
+		panelCost.remove(labelCost);
+		panelDepth.remove(labelDepth);
+		panelTime.remove(labelTime);
+		panelNodes.remove(labelNodes);
+		frame.remove(panelCost);
+		frame.remove(panelDepth);
+		frame.remove(panelTime);
+		frame.remove(panelNodes);
+
+	}
+
+	// function to check the validity of the input
+	boolean valid_input(String input) {
+		int len = input.length();
+		if (len != 9)
+			return false;
+		else {
+			for (int i = 0; i < len; i++) {
+				if (Character.getNumericValue(in.charAt(i)) < 0 || Character.getNumericValue(in.charAt(i)) > 8)
+					return false;
+				else {
+					for (int j = i + 1; j < len-1; j++) {
+						if (input.charAt(i) == input.charAt(j))
+							return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == combo) {
 			System.out.println(combo.getSelectedItem());
 		}
+
+		String algo = (combo.getSelectedItem()).toString();
+		Solver m = null;
+		switch (algo) {
+		case "BFS":
+			m = new BFS();
+			break;
+		case "DFS":
+			m = new DFS();
+			break;
+		case "A*:Manhattan Distance":
+			m = new AStarManhattan();
+			break;
+		case "A*Euclidean Distance":
+			m = new AStarEuclidean();
+			break;
+		}
+
 		if (e.getSource() == button1) {
+			iterator = 0;
+			
 			System.out.println(text.getText());
 			in = text.getText();
-			//replace 0 with space to be appeared
-			String s1 = "";
-			for (int i = 0; i < in.length(); i++) {
-				char c = in.charAt(i);
-				if (c == '0')
-					c = ' ';
-				s1 += c;
+
+			if (!valid_input(in))
+				System.out.println("NOT VALID");
+			else {
+				// replace 0 with space to be appeared
+				String s1 = "";
+				for (int i = 0; i < in.length(); i++) {
+					char c = in.charAt(i);
+					if (c == '0')
+						c = ' ';
+					s1 += c;
+				}
+				in = s1;
+
+				remove();
+				frame.revalidate();
+				frame.repaint();
+				states(in); // print the boxxxxxxxxxxx with spaces instead of zeroo
+
+				// replace the space to 0 again to be handled as an integer
+				String s2 = "";
+				if (in != null) {
+					for (int i = 0; i < in.length(); i++) {
+						char c = in.charAt(i);
+						if (c == ' ')
+							c = '0';
+						s2 += c;
+					}
+					in = s2; // the index with 0
+
+					if (in.equals("012345678")) {
+						System.out.println("goaaaaaaaal");
+						updateOutput();
+						frame.revalidate();
+						frame.repaint();
+						output(0, 0, 0, 0);
+					} else {
+						node.setState(Integer.parseInt(in));
+						if (!node.isSolvableState()) {
+							System.out.println("mlhoo4 7llllllll");
+							output(0, 0, 0, 0);
+						}
+
+						else {
+							System.out.println("leh 7llllllll");
+							res = m.solve(node);
+							// l mtloooob
+							cost = res.Cost();
+							time = res.getTime();
+							nodes = res.getNofNodes();
+							depth = res.getMaxDepth();
+
+							for (Node n : res.getPath()) {
+								steps += n.toString();
+							}
+
+							updateOutput();
+							frame.revalidate();
+							frame.repaint();
+							if (algo == "BFS")
+								depth = cost;
+							output(cost, time, depth, nodes);
+						}
+					}
+				}
 			}
-			in = s1;
-			
-			remove();
-			frame.revalidate();
-			frame.repaint();
-			states(in);
-		}
-		ForAlgorithms m = new BFS();
-		String steps = "";
-		//replace the space to 0 again to be handled as an integer
-		String s2 = "";
-		for (int i = 0; i < in.length(); i++) {
-			char c = in.charAt(i);
-			if (c == ' ')
-				c = '0';
-			s2 += c;
-		}
-		in = s2;
-		
-		Node node = new Node(Integer.parseInt(in));
-		Results_inf res = m.solve(node);
-		for (Node n : res.getPath()) {
-			steps += n.toString();
 		}
 
 		if (e.getSource() == button2) {
 			iterator += 9;
 
-			if (iterator > steps.length() - 1)
+			if (iterator > steps.length() - 1) {
 				System.out.println("finish");
-			else {
+			} else {
 				String s = "";
 				int i;
 				for (i = iterator; i < iterator + 9; i++) {
