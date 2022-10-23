@@ -1,4 +1,3 @@
-
 public class Heuristics {
     public double heuristicCost (int state , boolean flag){
         int[] stateArray = new int[9] ;
