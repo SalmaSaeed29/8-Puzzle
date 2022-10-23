@@ -8,17 +8,13 @@ public class DFS extends Solver {
         frontier=new Stack<>();
         frontierSet = new HashSet<>();
     }
-    /**
-     * Search for the goal state using DFS algorithm.
-     * @param initialState
-     * starting state.
-     * @param result
-     * result object to store number of expanded
-     * nodes in it.
-     * @return
-     * true if goal state is reached.
-     * false otherwise.
-     */
+
+
+    /*this func search for the goal by taking the intial state we take from user and
+    result abject from class Result to store number of node expanded , the path and
+    depth .
+    then return true if we find goal state
+    */
     @Override
     boolean search(Node initialState, Result result) {
         frontier.push(initialState);
